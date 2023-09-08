@@ -37,5 +37,7 @@ RUN curl https://get.modular.com | \
 # Install the mojo package
 RUN ALL_PROXY=$https_proxy https_proxy=$https_proxy HOME=/home/$username sudo -u $username -E modular install mojo
 
+RUN echo 'export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> /home/$username/.bashrc
+
 WORKDIR /home/$username
 USER $username
