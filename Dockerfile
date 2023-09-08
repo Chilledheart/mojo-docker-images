@@ -7,8 +7,6 @@ ARG username=mojo
 ARG mojo_auth
 ARG https_proxy
 
-RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list
-
 # Using separate RUNs here allows Docker to cache each update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update
 
