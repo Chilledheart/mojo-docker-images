@@ -10,7 +10,7 @@ docker build --build-arg userid=$(id -u) --build-arg groupid=$(id -g) \
 ```
 
 and run hello world
-``
+```
 docker run -it mojo-runner
 ```
 
