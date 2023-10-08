@@ -16,7 +16,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -y apt-utils curl sudo && \
     apt-get install -y libedit2 libncurses-dev apt-transport-https \
-      ca-certificates gnupg libxml2-dev python3 python3-pip python3-dev && \
+      ca-certificates gnupg libxml2-dev python3 python3-pip python3-dev python3.10-venv && \
     apt-get clean
 
 # Disable some gpg options which can cause problems in IPv4 only environments
@@ -30,13 +30,18 @@ RUN echo "$username ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/$username
 
 # Install the modular package
 RUN curl https://get.modular.com | \
-  ALL_PROXY=$https_proxy https_proxy=$https_proxy HOME=/home/$username MODULAR_AUTH=$mojo_auth sudo -u $username -E sh
+  ALL_PROXY=$https_proxy HOME=/home/$username MODULAR_AUTH=$mojo_auth \
+  sudo -u $username -E bash -
 
 # Install the mojo package
-RUN ALL_PROXY=$https_proxy https_proxy=$https_proxy HOME=/home/$username sudo -u $username -E modular install mojo
+RUN echo "export http_proxy=$https_proxy >> /home/$username/.bashrc"
+RUN echo "export https_proxy=$https_proxy >> /home/$username/.bashrc"
+RUN ALL_PROXY=$https_proxy http_proxy=$https_proxy https_proxy=$https_proxy HOME=/home/$username \
+  sudo -u $username -E modular install mojo
 
 # Update the mojo package manually
-# RUN ALL_PROXY=$https_proxy https_proxy=$https_proxy HOME=/home/$username sudo -u $username -E modular update mojo
+# RUN ALL_PROXY=$https_proxy http_proxy=$https_proxy https_proxy=$https_proxy HOME=/home/$username \
+# sudo -u $username -E modular update mojo
 
 RUN echo 'export MODULAR_HOME="$HOME/.modular"' >> /home/$username/.bashrc
 RUN echo 'export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> /home/$username/.bashrc
