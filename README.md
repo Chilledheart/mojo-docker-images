@@ -23,3 +23,10 @@ Type `:mojo help` for further assistance.
 2.
 Hello, world!
 ```
+
+## setup mirror site
+add ubuntu site and pip site:
+```
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list
+RUN sudo -u $username pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
+```
