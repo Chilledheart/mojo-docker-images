@@ -29,19 +29,18 @@ RUN groupadd -g $groupid $username \
 RUN echo "$username ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/$username
 
 # Install the modular package
+RUN echo "export HOME=/home/$username" >> /home/$username/.bashrc
 RUN curl https://get.modular.com | \
-  ALL_PROXY=$https_proxy HOME=/home/$username MODULAR_AUTH=$mojo_auth \
-  sudo -u $username -E bash -
+  sudo -u $username ALL_PROXY=$https_proxy MODULAR_AUTH=$mojo_auth bash -
 
 # Install the mojo package
-RUN echo "export http_proxy=$https_proxy >> /home/$username/.bashrc"
-RUN echo "export https_proxy=$https_proxy >> /home/$username/.bashrc"
-RUN ALL_PROXY=$https_proxy http_proxy=$https_proxy https_proxy=$https_proxy HOME=/home/$username \
-  sudo -u $username -E modular install mojo
+RUN sudo -u $username bash -c "mkdir -p ~/.modular/pkg/packages.modular.com_mojo && cd ~/.modular/pkg/packages.modular.com_mojo && python3 -m venv venv"
+RUN sudo -u $username ALL_PROXY=$https_proxy \
+  bash -c "cd ~/.modular/pkg/packages.modular.com_mojo && source venv/bin/activate && modular install mojo"
 
 # Update the mojo package manually
-# RUN ALL_PROXY=$https_proxy http_proxy=$https_proxy https_proxy=$https_proxy HOME=/home/$username \
-# sudo -u $username -E modular update mojo
+# RUN sudo -u $username ALL_PROXY=$https_proxy \
+#   bash -c "cd \$HOME && source venv/bin/activate && modular update mojo"
 
 RUN echo 'export MODULAR_HOME="$HOME/.modular"' >> /home/$username/.bashrc
 RUN echo 'export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> /home/$username/.bashrc
