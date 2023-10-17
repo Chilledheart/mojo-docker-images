@@ -34,13 +34,10 @@ RUN curl https://get.modular.com | \
   sudo -u $username ALL_PROXY=$https_proxy MODULAR_AUTH=$mojo_auth bash -
 
 # Install the mojo package
-RUN sudo -u $username bash -c "mkdir -p ~/.modular/pkg/packages.modular.com_mojo && cd ~/.modular/pkg/packages.modular.com_mojo && python3 -m venv venv"
-RUN sudo -u $username ALL_PROXY=$https_proxy \
-  bash -c "cd ~/.modular/pkg/packages.modular.com_mojo && source venv/bin/activate && modular install mojo"
+RUN sudo -u $username ALL_PROXY=$https_proxy modular install mojo
 
 # Update the mojo package manually
-# RUN sudo -u $username ALL_PROXY=$https_proxy \
-#   bash -c "cd \$HOME && source venv/bin/activate && modular update mojo"
+# RUN sudo -u $username ALL_PROXY=$https_proxy modular update mojo
 
 RUN echo 'export MODULAR_HOME="$HOME/.modular"' >> /home/$username/.bashrc
 RUN echo 'export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> /home/$username/.bashrc
